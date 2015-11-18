@@ -80,5 +80,33 @@ IoApp.factory('AppService', function(CONFIG) {
     	return minus;
     };
     
+    factory.download = function(sourceUrl, targetPath, callback){
+    	if(typeof FileTransfer != 'undefined') {
+    		var fileTransfer = new FileTransfer();
+            
+            fileTransfer.download(
+        		sourceUrl,
+        		targetPath,
+                function(entry) {
+                    console.log("download complete: " + entry.toURL());
+                    callback ? callback(entry) : null;
+                    //angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+                },
+                function(error) {
+                	console.log("download error source " + error.source);
+                	console.log("download error target " + error.target);
+                	console.log("upload error code" + error.code);
+                    
+                },
+                false,
+                {
+                    headers: {
+                        "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
+                    }
+                }
+            );
+    	}
+    };
+    
     return factory;
 });

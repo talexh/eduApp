@@ -1,6 +1,6 @@
 /*!
  * ngCordova
- * v0.1.21-alpha
+ * v0.1.23-alpha
  * Copyright 2015 Drifty Co. http://drifty.com/
  * See LICENSE in this repository for license information
  */
@@ -5445,6 +5445,7 @@ angular.module('ngCordova.plugins', [
   'ngCordova.plugins.printer',
   'ngCordova.plugins.progressIndicator',
   'ngCordova.plugins.push',
+  'ngCordova.plugins.push_v5',
   'ngCordova.plugins.sms',
   'ngCordova.plugins.socialSharing',
   'ngCordova.plugins.spinnerDialog',

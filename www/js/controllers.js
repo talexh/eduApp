@@ -7,109 +7,13 @@ IoApp.controller('AppController', function($scope, $state, $stateParams, $cordov
     //$scope.$on('$ionicView.enter', function(e) {
     //});
 
-    // Form data for the login modal
-    //$scope.loginData = {};
-
-    // Create the login modal that we will use later
-    /*
-    $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope
-    }).then(function(modal) {
-        $scope.modal = modal;
-    });
-
-    // Triggered in the login modal to close it
-    $scope.closeLogin = function() {
-        $scope.modal.hide();
-    };
-
-    // Open the login modal
-    $scope.login = function() {
-        $scope.modal.show();
-    };
-
-    // Perform the login action when the user submits the login form
-    $scope.doLogin = function() {
-        console.log('Doing login', $scope.loginData);
-
-        // Simulate a login delay. Remove this and replace with your login
-        // code if using a login system
-        $timeout(function() {
-            $scope.closeLogin();
-        }, 1000);
-    };
-    */
-	
-	
-
     document.addEventListener('deviceready', function () {
-    	function fail () {
-    		alert('created folder feail');
-    	}
-
-    	function gotFS(fileSystem) {
-    		//console.log("filesystem got");
-    		fileSystem.root.getDirectory('edudata', {
-    			create : true,
-    			exclusive : false
-    		}, dirReady, fail);
-    	}
-
-    	function dirReady (entry) {
-    		$scope.downloadPath = entry.fullPath + '/';
-    		var targetPath = $scope.downloadPath + "testImage.png",
-	        	trustHosts = true,
-	        	options = {};
-	        
-	        //var fileTransfer = new FileTransfer();
-	        //var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-	        //targetPath = targetPath.replace('file://','');
-	        $scope.imgdownloaded = 'http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png';
-	        var url = "http://ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-	        $cordovaFileTransfer.download(url, targetPath, options, trustHosts)
-	          .then(function(result) {
-	            // Success!
-	        	  alert('Success: ' + targetPath);
-	        	  $scope.imgdownloaded = targetPath;
-	          }, function(err) {
-	        	  alert('error code:' + err.code);
-	            // Error
-	          }, function (progress) {
-	            $timeout(function () {
-	            	$scope.downloadProgress = (progress.loaded / progress.total) * 100;
-	            })
-	          });
-//	        fileTransfer.download(
-//	        	uri,
-//	            targetPath,
-//	            function(entry) {
-//	                alert("download complete: " + entry.toURL());
-//	                $scope.imgdownloaded = 'http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png';
-//	            },
-//	            function(error) {
-//	                alert("download error source " + error.source);
-//	                alert("download error target " + error.target);
-//	                alert("upload error code" + error.code);
-//	                
-//	            },
-//	            false,
-//	            {
-//	                headers: {
-//	                    "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
-//	                }
-//	            }
-//	        );
+    	var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
+        var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
+        AppService.download(uri, targetPath, function(entry){
+        	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+        });
     		
-    	}
-    	
-    	if(typeof LocalFileSystem != 'undefined') {
-			window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
-		}
-    	
-        
-        
-       
-
     }, false);
 	
     var w = angular.element($window);
@@ -150,12 +54,16 @@ IoApp.controller('AnimalController', function($scope, $window, $state, $cordovaM
   
   $scope.contents = AppService.getContentByCategory($scope.categoryId);
   $scope.defaultItem = AppService.getRandomContentInList($scope.contents);
-  
+
+//  var currentObj = angular.element(document.getElementsByClassName('current'));
+//  currentObj.addClass('has-animation');
+//  console.log(currentObj[0].className);
+//  console.log($scope.path + $scope.defaultItem.sound);
   AppService.play($scope.path + $scope.defaultItem.sound, function(audio){
-  	target.removeClass("scale-animation");
-  	o.addClass('clickable');
+	  //currentObj.removeClass("scale-animation");
+  	//o.addClass('clickable');
   });
-  
+//  
   //Play sound
   $scope.play = function($event) {
     

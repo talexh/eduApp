@@ -87,7 +87,15 @@
   	margin: 0;
   	top: 0;
 }
-
+.home-content .logo {
+	width: 100%;
+	text-align: center;
+	box-sizing: border-box;
+	padding: 40px 0 0 0;
+}
+.home-content .logo img {
+	max-width: 70%;
+}
 .scroll {
 	height: 100%;
 	overflow: hidden;
@@ -301,7 +309,7 @@
 	    margin-left: 0;
 	}
 	.animal-content .animal-list .item img {
-		max-width: 100%;
+		max-width: 450px !important;
 	}
   
 	.back-to-home img {

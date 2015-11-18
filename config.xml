@@ -25,6 +25,9 @@
   <feature name="FileTransfer">
     <param name="ios-package" value="CDVFileTransfer" />
 </feature>
+
+<!-- for android -->
+<!-- <preference name="AndroidPersistentFileLocation" value="Compatibility" /> -->
   
   <platform name="ios">
     <icon src="resources/ios/icon/icon.png" width="57" height="57"/>
