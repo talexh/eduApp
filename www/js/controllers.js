@@ -1,4 +1,4 @@
-IoApp.controller('AppController', function($scope, $state, $stateParams, $cordovaFileTransfer, AppService, $window, $ionicModal, CONFIG, $timeout) {
+eduApp.controller('AppController', function($scope, $state, $stateParams, $cordovaFileTransfer, AppService, $window, $ionicModal, CONFIG, $timeout) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -7,14 +7,14 @@ IoApp.controller('AppController', function($scope, $state, $stateParams, $cordov
     //$scope.$on('$ionicView.enter', function(e) {
     //});
 
-    document.addEventListener('deviceready', function () {
-    	var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-        var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
-        AppService.download(uri, targetPath, function(entry){
-        	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
-        });
-    		
-    }, false);
+//    document.addEventListener('deviceready', function () {
+//    	var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
+//        var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
+//        AppService.download(uri, targetPath, function(entry){
+//        	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+//        });
+//    		
+//    }, false);
 	
     var w = angular.element($window);
     $scope.categories = AppService.getCategories();
@@ -43,7 +43,7 @@ IoApp.controller('AppController', function($scope, $state, $stateParams, $cordov
 
     
 });
-IoApp.controller('AnimalController', function($scope, $window, $state, $cordovaMedia, $ionicPlatform, AppService, $stateParams, CONFIG, $timeout) {
+eduApp.controller('AnimalController', function($scope, $window, $state, $cordovaMedia, $ionicPlatform, AppService, $stateParams, CONFIG, $timeout) {
 	
 	angular.element(document.getElementsByClassName('scale-animation')).removeClass("scale-animation");
 	
@@ -119,7 +119,7 @@ IoApp.controller('AnimalController', function($scope, $window, $state, $cordovaM
   };
 });
 
-IoApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
+eduApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
     return {
         link : function(scope, element, attrs){
             element.bind('click', function() {
@@ -129,7 +129,7 @@ IoApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
     };
 });
 
-IoApp.directive('position', function ($window, AppService, CONFIG) {
+eduApp.directive('position', function ($window, AppService, CONFIG) {
 
     return {
         restrict: "A",

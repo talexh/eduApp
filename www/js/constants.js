@@ -1,9 +1,8 @@
 /**
  * 
  */
-var IoApp = angular.module('ionicApp', ['ionic','ngCordova'])
-
-IoApp.constant('CONFIG', {
+var eduApp = angular.module('eduApp', ['ionic','ngCordova'])
+eduApp.constant('CONFIG', {
     APP_NAME: 'My App',
     APP_VERSION: '1.0',
     PATH : 'AnimalsData/',

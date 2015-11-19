@@ -1,4 +1,4 @@
-IoApp.run(function($ionicPlatform) {
+eduApp.run(function($ionicPlatform, AppService) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -13,11 +13,17 @@ IoApp.run(function($ionicPlatform) {
         }
 
         window.screen.lockOrientation('portrait');
-       
+        
+        alert("device ready");
+        var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
+        var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
+        AppService.download(uri, targetPath, function(entry){
+        	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+        });
         
     });
 });
-IoApp.config(function($stateProvider, $urlRouterProvider) {
+eduApp.config(function($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('tabs', {

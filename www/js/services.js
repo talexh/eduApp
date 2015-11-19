@@ -2,7 +2,7 @@
  * 
  */
 
-IoApp.factory('AppService', function(CONFIG) {
+eduApp.factory('AppService', function(CONFIG) {
      
     var factory = {};
 
@@ -106,6 +106,10 @@ IoApp.factory('AppService', function(CONFIG) {
                 }
             );
     	}
+    };
+    
+    factory.checkRequestDownload = function(){
+    	
     };
     
     return factory;
