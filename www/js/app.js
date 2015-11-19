@@ -1,4 +1,4 @@
-IoApp.run(function($ionicPlatform, $cordovaFileTransfer) {
+IoApp.run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -14,21 +14,6 @@ IoApp.run(function($ionicPlatform, $cordovaFileTransfer) {
 
         window.screen.lockOrientation('portrait');
        
-//        var url = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-//        var targetPath = cordova.file.documentsDirectory + "testImage.png";
-//        $cordovaFileTransfer.download(url, targetPath, {}, true)
-//          .then(function(result) {
-//            // Success!
-//        	  alert(targetPath);
-//        	  $scope.imgdownloaded = targetPath;
-//          }, function(err) {
-//        	  alert('error');
-//            // Error
-//          }, function (progress) {
-//            $timeout(function () {
-//            	$scope.downloadProgress = (progress.loaded / progress.total) * 100;
-//            })
-//          });
         
     });
 });
