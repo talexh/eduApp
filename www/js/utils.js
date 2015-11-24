@@ -1,8 +1,7 @@
 /**
  * 
  */
-
-var mediaObj = null,soundOff = false,filename = '';
+var filename = '';
 angular.module('eduApp.utils', [])
 
 .factory('$localstorage', ['$window', function($window) {
@@ -21,19 +20,3 @@ angular.module('eduApp.utils', [])
 	    }
 	 }
 }]);
-var eduApp = angular.module('eduApp', ['ionic','ngCordova', 'eduApp.utils'])
-eduApp.constant('CONFIG', {
-    APP_NAME: 'My App',
-    APP_VERSION: '1.0',
-    PATH : 'AnimalsData/',
-    SERVER_URL: 'http://',
-    SYSTEM_LANGUAGE: 'vi',
-    iPhone4: '320x480',
-    iPhone5: '320x568',
-    iPhone6: '375x627',
-    iPhone6p: '414x736',
-    iPad: '768x1024',
-    DYLAMIC_PATH : '',
-    DOWNLOAD_PATH: 'cdvfile://localhost/persistent/eduappdata/',
-});
-

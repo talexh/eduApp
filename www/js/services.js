@@ -2,10 +2,10 @@
  * 
  */
 
-eduApp.factory('AppService', function(CONFIG) {
+eduApp.factory('AppService', function(CONFIG, $localstorage) {
      
     var factory = {};
-
+    
     factory.play = function(src, callback) {
     	 var audio = null;
     	 if(typeof Media != 'undefined') {
@@ -22,7 +22,7 @@ eduApp.factory('AppService', function(CONFIG) {
 			}, false);
     	 }
     	 
-        
+        return audio;
     };
     factory.stop = function(audio) {
         if(audio != null) {
@@ -108,8 +108,26 @@ eduApp.factory('AppService', function(CONFIG) {
     	}
     };
     
-    factory.checkRequestDownload = function(){
-    	
+    factory.getFilename = function(filename){
+    	return filename.substring(filename.lastIndexOf('/') + 1, filename.length);
+    };
+    
+    factory.checkRequestDownload = function(response, callback){
+    	if(response.total > 0 && response.log4Data.length > 0) {
+    		$localstorage.set('lastupdated', response.date);
+    		for(var i in response.log4Data) {
+    			var item = response.log4Data[i];
+    			if(typeof item == 'object') {
+    				var name = this.getFilename(item.filename),
+    					targetPath = CONFIG.DOWNLOAD_PATH + name;
+    				
+    				this.download(item.filename, targetPath, function(entry){
+    					filename = entry.toURL();
+                    });
+    			}
+    		}
+    		callback ? callback() : null;
+    	}
     };
     
     return factory;

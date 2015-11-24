@@ -1,11 +1,12 @@
-eduApp.controller('AppController', function($scope, $state, $stateParams, $cordovaFileTransfer, AppService, $window, $ionicModal, CONFIG, $timeout) {
+eduApp.controller('AppController', function($scope, $state, $stateParams, AppService, $window, $ionicPlatform,$cordovaMedia, $ionicModal, CONFIG, $timeout) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
     // listen for the $ionicView.enter event:
-    //$scope.$on('$ionicView.enter', function(e) {
-    //});
+//    $scope.$on('$ionicView.enter', function(e) {
+//    	console.log('view enter');
+//    });
 
 //    document.addEventListener('deviceready', function () {
 //    	var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
@@ -15,108 +16,163 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, $cordo
 //        });
 //    		
 //    }, false);
-	
+    
     var w = angular.element($window);
     $scope.categories = AppService.getCategories();
     $scope.path = CONFIG.PATH;
-    $scope.landingTo = function($url, categoryId) {
-        $timeout(function() {
-            //AppService.stop($scope.audio);
-            //$scope.audio.stop();
-            //$scope.audio.pause();
-            //$scope.audio.currentTime = 0;
-            $state.go($url,{'categoryId':categoryId});
-            angular.element(document.getElementsByClassName('scale-animation')).removeClass("scale-animation");
-        }, 700);
-    	
-    };
 
     //$scope.contents = jsonData.news;
     $scope.landingToHome = function($url) {
     	$state.go($url);
     };
-
-//     AppService.play($scope.path + 'ai-kho-vi-ai.mp3', function(audio){
-//         //$scope.audio = audio;
-//         //audio.stop();
-//     });
-
+    
+    $ionicPlatform.ready(function() {
+    	if(mediaObj != null) {
+    		mediaObj.play();
+    	}
+     });
     
 });
 eduApp.controller('AnimalController', function($scope, $window, $state, $cordovaMedia, $ionicPlatform, AppService, $stateParams, CONFIG, $timeout) {
 	
-	angular.element(document.getElementsByClassName('scale-animation')).removeClass("scale-animation");
+	//angular.element(document.getElementsByClassName('scale-animation')).removeClass("scale-animation");
+	$scope.filename = filename;
 	
-  // path to file downloaded
-  $scope.path = CONFIG.PATH;
-  $scope.categoryId = parseInt($stateParams.categoryId, 10);
-  $scope.lineHeight = $window.innerHeight +'px';
+	// path to file downloaded
+	$scope.path = CONFIG.PATH;
+	$scope.categoryId = parseInt($stateParams.categoryId, 10);
+	$scope.lineHeight = $window.innerHeight +'px';
+	
+	var contents = AppService.getContentByCategory($scope.categoryId);
+//	for(var k in contents) {
+//		if(typeof contents[k] == 'object') {
+//			if(contents[k].image_name == 'conhuoucaoco.jpg' && filename != ''){
+//				contents[k].image_name = filename;
+//			} else {
+//				if(contents[k].image_name.indexOf(CONFIG.PATH) == -1) {
+//					contents[k].image_name = CONFIG.PATH + contents[k].image_name;					
+//				}
+//			}
+//		}
+//	}
+	
+	$scope.contents = contents;
+	$scope.defaultItem = AppService.getRandomContentInList(contents);
+
+	// Play sound when user click from home page
+	if(!soundOff) {
+		AppService.play($scope.path + $scope.defaultItem.sound, function(audio){});
+	}
+	
+	if(!soundOff) {
+		angular.element(document.querySelector('.sound-off')).removeClass('hidden').addClass('show');
+		angular.element(document.querySelector('.sound-on')).removeClass('show').addClass('hidden');
+	} else {
+		angular.element(document.querySelector('.sound-on')).removeClass('hidden').addClass('show');
+		angular.element(document.querySelector('.sound-off')).removeClass('show').addClass('hidden');
+	}
+	$ionicPlatform.ready(function() {
+		
+		if(typeof Media != 'undefined') {
+			mediaObj.stop();
+	        $scope.playMedia = function() {
+	        	mediaObj.play();
+	        };	
+		} else {
+			mediaObj.pause();
+	        $scope.playMedia = function() {
+	        	mediaObj.play();
+	        };
+		}
+		
+     });
+	
+	$scope.onoffSound = function(current, other, isOff){
+		angular.element(document.querySelector(current)).removeClass('hidden').addClass('show');
+		angular.element(document.querySelector(other)).removeClass('show').addClass('hidden');
+		
+		soundOff = isOff;
+	};
   
-  $scope.contents = AppService.getContentByCategory($scope.categoryId);
-  $scope.defaultItem = AppService.getRandomContentInList($scope.contents);
-
-//  var currentObj = angular.element(document.getElementsByClassName('current'));
-//  currentObj.addClass('has-animation');
-//  console.log(currentObj[0].className);
-//  console.log($scope.path + $scope.defaultItem.sound);
-  AppService.play($scope.path + $scope.defaultItem.sound, function(audio){
-	  //currentObj.removeClass("scale-animation");
-  	//o.addClass('clickable');
-  });
-//  
   //Play sound
-  $scope.play = function($event) {
+	$scope.play = function($event) {
+		
+	    var o = angular.element($event.target).parent(),
+	      cls = AppService.getAttribute(o,'class'),
+	      src = AppService.getAttribute(o, 'data-src');
+	
+	    if(o.hasClass('animal-item') && o.hasClass('clickable')) {
+	    	o.removeClass('clickable');
+		    var target = angular.element(document.getElementsByClassName('scale-animation'));
+		    if(soundOff) {
+		    	$timeout(function(){
+		    		target.removeClass("scale-animation");
+			    	o.addClass('clickable');
+		    	}, 600);
+	    	} else {
+	    	    AppService.play(src, function(audio){
+	    	    	target.removeClass("scale-animation");
+	    	    	o.addClass('clickable');
+	    	    });
+		
+	    	}	    	
+	    }  
+	};
     
-    var o = angular.element($event.target).parent(),
-      cls = AppService.getAttribute(o,'class'),
-      src = AppService.getAttribute(o, 'data-src');
-
-    if(cls.indexOf('animal-item') == -1 || cls.indexOf('clickable') == -1) return false;  
-    o.removeClass('clickable');
-    var target = angular.element(document.getElementsByClassName('scale-animation'));
+	$scope.onSwipeLeft = function(curIdx, total) {
+	    var prevIdx = 0;
+	    if(curIdx == 0) {
+	      prevIdx = total - 1;
+	    } else {
+	      prevIdx = curIdx - 1;
+	    }
+	    
+	    angular.element(document.querySelector('[data-index="'+curIdx+'"]')).removeClass('current');
+	    var currentObj = angular.element(document.querySelector('[data-index="'+prevIdx+'"]'));
+	    if(currentObj.hasClass('slide-able')) {
+	    	// TODO
+	    	currentObj.removeClass('slide-able').addClass('current').addClass('slide-left');//.addClass('has-animation');
+	    	if(soundOff) {
+	    		$timeout(function(){
+	    			currentObj.removeClass('slide-left').addClass('slide-able');
+		    	}, 600);
+	    		
+	    	} else {
+	    		// Play sound
+			    AppService.play(currentObj[0].getAttribute('data-src'), function(audio){
+			    	currentObj.removeClass('slide-left').addClass('slide-able');
+			    });	    		
+	    	}
+	    }
+	};
     
-    AppService.play(src, function(audio){
-    	target.removeClass("scale-animation");
-    	o.addClass('clickable');
-    });
-  };
-    
-  $scope.onSwipeLeft = function(curIdx, total) {
-    
-    var prevIdx = 0;
-    if(curIdx == 0) {
-      prevIdx = total - 1;
-    } else {
-      prevIdx = curIdx - 1;
-    }
-    
-    angular.element(document.querySelector('[data-index="'+curIdx+'"]')).removeClass('current');
-    var currentObj = angular.element(document.querySelector('[data-index="'+prevIdx+'"]'));
-    currentObj.addClass('current').addClass('has-animation');
-    
-    // Play sound
-    AppService.play(currentObj[0].getAttribute('data-src'), function(audio){
-      currentObj.removeClass("has-animation");
-    });
-  };
-    
-  $scope.onSwipeRight = function(curIdx, total) {
-    
-    var nextIdx = 0;
-    if(curIdx == total - 1) {
-      nextIdx = 0;
-    } else {
-      nextIdx = curIdx + 1;
-    }
-    angular.element(document.querySelector('[data-index="'+curIdx+'"]')).removeClass('current');
-    var currentObj = angular.element(document.querySelector('[data-index="'+nextIdx+'"]'));
-    currentObj.addClass('current').addClass('has-animation');
-    
-    // Play sound
-    AppService.play(currentObj[0].getAttribute('data-src'), function(audio){
-      currentObj.removeClass("has-animation");
-    });
-  };
+	$scope.onSwipeRight = function(curIdx, total) {
+	    var nextIdx = 0;
+	    if(curIdx == total - 1) {
+	      nextIdx = 0;
+	    } else {
+	      nextIdx = curIdx + 1;
+	    }
+	    
+	    var prev = angular.element(document.querySelector('[data-index="'+curIdx+'"]')).removeClass('current');
+	    var currentObj = angular.element(document.querySelector('[data-index="'+nextIdx+'"]'));
+	    
+	    if(currentObj.hasClass('slide-able')) {
+	    	// TODO
+	    	currentObj.removeClass('slide-able').addClass('current').addClass('slide-right');
+	    	if(soundOff) {
+	    		$timeout(function(){
+	    			currentObj.removeClass('slide-right').addClass('slide-able');
+		    	}, 600);
+	    	} else {
+	    		// Play sound
+			    AppService.play(currentObj[0].getAttribute('data-src'), function(audio){
+			    	currentObj.removeClass('slide-right').addClass('slide-able');
+			    });	    		
+	    	}
+	    }
+	    
+	};
 });
 
 eduApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
@@ -126,58 +182,6 @@ eduApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
                 element.addClass('scale-animation');
             });
         }
-    };
-});
-
-eduApp.directive('position', function ($window, AppService, CONFIG) {
-
-    return {
-        restrict: "A",
-        link: function (scope, elem, attr) {
-            //$timeout(function(){
-               
-                var container = angular.element(document.getElementsByClassName('objects')),
-                    pw = parseFloat(container[0].offsetWidth),
-                    ph = parseFloat(container[0].offsetHeight),
-                    containerHeight = parseFloat($window.innerHeight/2),
-                    size = ($window.innerWidth+'x'+$window.innerHeight);
-
-                if(attr['class'].indexOf('first-item') != -1) {
-                    //var img = new Image();
-                    //img.src = attr['src'];
-                    //img.onload = function(){
-                    elem.bind('load', function(e) {
-                        var w = parseFloat(this.width),
-                            h = parseFloat(this.height);
-                        
-                        var minus = AppService.calculatorPosition(size);
-                        
-                        scope.offsetBottom = (containerHeight/2 - h/2 - minus) + 'px';
-                        scope.offsetLeft = '30px';
-                        elem.css('bottom', scope.offsetBottom);
-                        elem.css('left', scope.offsetLeft);
-                        //console.log(elem.parent().offsetHeight);
-                        //alert('bottom: '+scope.offsetBottom);
-                        //alert('left: '+scope.offsetLeft);
-                    });
-                }
-                
-                if(attr['class'].indexOf('last-item') != -1) {
-                    elem.bind('load', function(e) {
-                        var w = parseFloat(this.width),
-                            h = parseFloat(this.height);
-                        var wSpace = (pw - w),
-                             hSpace = ((ph - h) + (elem[0].offsetHeight - h) );
-                        
-                        scope.offsetTop = (hSpace/2) + 'px';
-                        elem.css('top', scope.offsetTop);
-                        //alert('top: '+scope.offsetTop);
-                    });
-                     
-                 }
-            //},1000);
-        	
-         }
     };
 });
 

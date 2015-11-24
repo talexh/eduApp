@@ -10,6 +10,7 @@
   <content src="index.html"/>
   <access origin="*"/>
   <access origin="*.ekc.ch"/>
+  <access origin="http://demo.ekc.ch/*"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
