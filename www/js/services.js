@@ -2,7 +2,7 @@
  * 
  */
 
-eduApp.factory('AppService', function(CONFIG, $localstorage) {
+eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
      
     var factory = {};
     
@@ -80,16 +80,62 @@ eduApp.factory('AppService', function(CONFIG, $localstorage) {
     	return minus;
     };
     
-    factory.download = function(sourceUrl, targetPath, callback){
-    	if(typeof FileTransfer != 'undefined') {
+    factory.reloadImages = function($list){
+    	var downloadPath = 'cdvfile://localhost/persistent/eduappdata/';
+    	angular.forEach($list, function(item) {
+    		var img = new Image();
+    		img.src = downloadPath + item.image_name;
+    		img.onload = function(){
+    			item.image_name = downloadPath + item.image_name;
+    		};
+    		img.onerror = function(){};
+	    });
+    	return $list;
+    };
+    
+    factory.download = function(list, index, sourceUrl, targetPath, callback){
+    	//if(typeof FileTransfer != 'undefined') {
     		var fileTransfer = new FileTransfer();
-            
+    		var $me = this;
+    		var filename = $me.getFilename(sourceUrl);
+			var dest = targetPath + filename;
+			
             fileTransfer.download(
         		sourceUrl,
-        		targetPath,
+        		dest,
                 function(entry) {
-                    console.log("download complete: " + entry.toURL());
-                    callback ? callback(entry) : null;
+        			index += 1;
+        			var percent = Math.round((index/list.length) * 100);
+					//angular.element(document.getElementsByClassName('percent')).html( ((percent > 100) ? 100 : percent)+'%' );
+        			angular.element(document.getElementsByClassName('percent-bg')).css({'width':((percent > 100) ? 100 : percent)+'%'});
+					if(percent >= 100) {
+						$timeout(function(){
+							angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
+							angular.element(document.getElementsByClassName('contents')).html('');
+							angular.element(document.getElementsByClassName('percent')).html('');
+							if(mediaObj != null) {
+					    		mediaObj.play();
+					    	}
+						}, 800);
+					}
+					if(typeof list[index] == 'object') {
+						var source = list[index].filename,
+							filename = $me.getFilename(source),
+							dest = targetPath + filename;
+                    	$me.download(list, index, source, targetPath, function(obj){
+//                    		if(obj.toURL().indexOf('.mp3') == -1) {
+//            					angular.element(document.getElementsByClassName('contents')).append('<img src="'+dest+'" width="auto" height="50"/>');	
+//            				} else {
+//            					var sound = new Media(dest, function(){
+            						// TODO
+//            		        	 });
+//            					sound.play();
+//            				}
+                    	});
+                    	
+                    	callback ? callback(entry) : null;
+                    }
+					
                     //angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
                 },
                 function(error) {
@@ -105,11 +151,14 @@ eduApp.factory('AppService', function(CONFIG, $localstorage) {
                     }
                 }
             );
-    	}
+    	//}
     };
     
     factory.getFilename = function(filename){
     	return filename.substring(filename.lastIndexOf('/') + 1, filename.length);
+    };
+    factory.getFilenameExt = function(filename){
+    	return filename.substring(filename.lastIndexOf('.') + 1, filename.length);
     };
     
     factory.checkRequestDownload = function(response, callback){

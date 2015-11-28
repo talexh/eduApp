@@ -1,4 +1,4 @@
-eduApp.controller('AppController', function($scope, $state, $stateParams, AppService, $window, $ionicPlatform,$cordovaMedia, $ionicModal, CONFIG, $timeout) {
+eduApp.controller('AppController', function($scope, $state, $stateParams, AppService, $window, $ionicPlatform, $localstorage, $cordovaMedia, $ionicModal, CONFIG, $timeout) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -16,8 +16,28 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
 //        });
 //    		
 //    }, false);
+	
+	if(typeof Media != 'undefined') {
+        mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
+    } else {
+    	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
+    }
+	
+//    var lastUpdated = $localstorage.get('lastupdated','');
+//    $http.get("http://demo.ekc.ch/logger.json")
+//    .success(function(response) {
+//    	if(lastUpdated != response.date) {
+//    		AppService.checkRequestDownload(response,function(){});	
+//    	}
+//    });
+//    var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
+//    var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
+//    AppService.download(uri, targetPath, function(entry){
+//    	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+//    });
     
     var w = angular.element($window);
+    $scope.lineHeight = $window.innerHeight +'px';
     $scope.categories = AppService.getCategories();
     $scope.path = CONFIG.PATH;
 
@@ -27,8 +47,74 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     };
     
     $ionicPlatform.ready(function() {
-    	if(mediaObj != null) {
-    		mediaObj.play();
+    	var lastestUpdate = $localstorage.get('lastestUpdate','');
+//    	$http.get("http://demo.ekc.ch/logger.json")
+//    	.success(function(response) {
+//    		if(lastUpdated != response.date) {
+//    			AppService.checkRequestDownload(response,function(){
+//    				angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+//    			});	
+//    		}
+//    	});
+    	var response = {};
+    	response.log4Data = [{"filename":'http://www.ekc.ch/logos-4live-app/bench.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/beldona.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/blackout_2.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/aaamigros.png'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/bench.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/beldona.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/blackout_2.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/aaamigros.png'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/bench.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/beldona.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/blackout_2.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/aaamigros.png'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/bench.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/beldona.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/blackout_2.jpg'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/aaamigros.png'},
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'},
+    	                     {"filename":'http://www.ekc.ch/fileadmin/Going-Out.mp3'}];
+    	response.date = "2015-29-11";
+    	if(lastestUpdate != response.date) {
+    		$localstorage.set('lastestUpdate',response.date);
+        	response.total = 21;
+    		var counter = 0,
+    			list = response.log4Data;
+    		
+    		
+    		if(typeof list[counter] == 'object') {
+    			var name = AppService.getFilename(list[counter].filename);
+    			
+    			var targetPath = 'cdvfile://localhost/persistent/eduappdata/';
+    			AppService.download(list, counter, list[counter].filename, targetPath, function(entry){
+//    				if(name.indexOf('.mp3') == -1) {
+//    					angular.element(document.getElementsByClassName('contents')).append('<img src="'+targetPath + name+'" width="auto" height="50"/>');	
+//    				} else {
+    					//var sound = new Media(targetPath + name, function(){
+    		        		 //TODO
+    		        	//});
+    					//sound.play();
+//    				}
+    			});
+    			
+    			//counter++;
+    		}
+    	} else {
+    		angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
+    		if(mediaObj != null) {
+	    		mediaObj.play();
+	    	}
+    	}
+		
+		if(mediaObj != null) {
+//    		mediaObj.play();
+    		$scope.stopMedia = function(){
+    			mediaObj.pause();
+    		};
     	}
      });
     
@@ -184,10 +270,49 @@ eduApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
         }
     };
 });
-
-var FileModule = angular.module('fileModule', ['ionic','ngCordova'])
-.controller('DownloadController', function($scope, $timeout, $cordovaFileTransfer) {
-
-  
+eduApp.controller('DownloadController', function($scope, $state, $location, $stateParams, AppService, $localstorage, $window, $ionicPlatform, $cordovaMedia, $ionicModal, CONFIG, $timeout) {
+	$scope.path = CONFIG.PATH;
+	var lastUpdated = $localstorage.get('lastupdated','');
+//	$http.get("http://demo.ekc.ch/logger.json")
+//	.success(function(response) {
+//		if(lastUpdated != response.date) {
+//			AppService.checkRequestDownload(response,function(){
+//				angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
+//			});	
+//		}
+//	});
+	$ionicPlatform.ready(function() {
+		
+		var list = ['http://www.ekc.ch/logos-4live-app/bench.jpg',
+		            'http://www.ekc.ch/logos-4live-app/beldona.jpg',
+		            'http://www.ekc.ch/logos-4live-app/blackout_2.jpg',
+		            'http://www.ekc.ch/logos-4live-app/aaamigros.png',
+		            'http://www.ekc.ch/logos-4live-app/exlibris.jpg',
+		            'http://www.ekc.ch/fileadmin/Going-Out.mp3'];
+		var counter = 0;
+		
+		if(typeof list[counter] == 'string') {
+			var uri = list[counter];
+			var name = AppService.getFilename(uri);
+			
+			var targetPath = 'cdvfile://localhost/persistent/eduappdata/';
+			AppService.download(list, counter, uri, targetPath, $state, function(entry){
+				if(name.indexOf('.mp3') == -1) {
+					angular.element(document.getElementsByClassName('main-container')).append('<img src="'+targetPath + name+'" width="auto" height="50"/>');	
+				} else {
+					//var sound = new Media(targetPath + name, function(){
+		        		 //TODO
+		        	//});
+					//sound.play();
+				}
+			});
+			//counter++;
+		}
+		
+	});
+	//var o = angular.element(document.getElementsByClassName('chekcing-page'));
+	//o.append('Hello chicky!');
+	
+	//o[0].style.lineHeight = $window.innerHeight + 'px';
 });
 

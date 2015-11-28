@@ -52,9 +52,13 @@
           <div class="logo">
             <img src="{{path}}logo_page1.png" title="" alt=""/>
           </div>
-			<div class="append-container">
-		
-		  </div>
+			<div class="main-container" ng-style="{lineHeight:height}">
+				Downloading...
+				<div class="percent">
+					<div class="percent-bg"></div>
+				</div>
+				<div class="contents"></div>
+			</div>
           <div class="objects">
               <a ng-repeat="category in categories" ng-click="stopMedia()" class="object{{$first ? ' is-first' : ''}}{{$last ? ' is-last' : ''}}" data-category="{{category.id}}" href="#/tab/liveshow/{{category.id}}">
                   <img src="{{path + category.image_name}}" ng-if="$first" title="" alt="" />

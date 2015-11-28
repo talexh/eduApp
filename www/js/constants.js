@@ -23,7 +23,7 @@ angular.module('eduApp.utils', [])
 }]);
 var eduApp = angular.module('eduApp', ['ionic','ngCordova', 'eduApp.utils'])
 eduApp.constant('CONFIG', {
-    APP_NAME: 'My App',
+    APP_NAME: 'edu App',
     APP_VERSION: '1.0',
     PATH : 'AnimalsData/',
     SERVER_URL: 'http://',
