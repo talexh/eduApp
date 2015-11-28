@@ -15,7 +15,7 @@
 
     <script src="cordova.js"></script>
     
-    <script src="AnimalsData/data.js"></script>
+    <script src="AnimalsData/app_1_data.js"></script>
     
   </head>
 
@@ -61,8 +61,8 @@
 			</div>
           <div class="objects">
               <a ng-repeat="category in categories" ng-click="stopMedia()" class="object{{$first ? ' is-first' : ''}}{{$last ? ' is-last' : ''}}" data-category="{{category.id}}" href="#/tab/liveshow/{{category.id}}">
-                  <img src="{{path + category.image_name}}" ng-if="$first" title="" alt="" />
-                  <img src="{{path + category.image_name}}" ng-if="!$first" title="" alt=""/>
+                  <img src="{{category.image_name}}" ng-if="$first" title="" alt="" />
+                  <img src="{{category.image_name}}" ng-if="!$first" title="" alt=""/>
               </a>
           </div>
         </ion-content>
@@ -81,10 +81,10 @@
               <ion-item ng-repeat="item in contents" ng-click="play($event)" scale-animation
               on-swipe-left="onSwipeLeft({{$index}}, {{contents.length}})" 
               on-swipe-right="onSwipeRight({{$index}}, {{contents.length}})" 
-              data-src="{{path + item.sound}}" class="item animal-item clickable {{defaultItem.id == item.id ? 'current' : ''}} slide-able" 
+              data-src="{{item.sound}}" class="item animal-item clickable {{defaultItem.id == item.id ? 'current' : ''}} slide-able" 
               data-index="{{$index}}" data-total="{{contents.length}}" ng-style="{lineHeight:lineHeight}">
               
-                <img src="{{path + item.image_name}}"/>
+                <img src="{{item.image_name}}"/>
                 
               </ion-item>
           </ion-list>

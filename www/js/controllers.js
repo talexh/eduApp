@@ -8,43 +8,18 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
 //    	console.log('view enter');
 //    });
 
-//    document.addEventListener('deviceready', function () {
-//    	var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-//        var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
-//        AppService.download(uri, targetPath, function(entry){
-//        	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
-//        });
-//    		
-//    }, false);
-	
 	if(typeof Media != 'undefined') {
         mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
     } else {
     	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
     }
 	
-//    var lastUpdated = $localstorage.get('lastupdated','');
-//    $http.get("http://demo.ekc.ch/logger.json")
-//    .success(function(response) {
-//    	if(lastUpdated != response.date) {
-//    		AppService.checkRequestDownload(response,function(){});	
-//    	}
-//    });
-//    var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-//    var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
-//    AppService.download(uri, targetPath, function(entry){
-//    	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
-//    });
-    
-    var w = angular.element($window);
     $scope.lineHeight = $window.innerHeight +'px';
-    $scope.categories = AppService.getCategories();
+    var $categories = AppService.getCategories();
+    $scope.categories = AppService.correctImagePath($categories);
     $scope.path = CONFIG.PATH;
 
     //$scope.contents = jsonData.news;
-    $scope.landingToHome = function($url) {
-    	$state.go($url);
-    };
     
     $ionicPlatform.ready(function() {
     	var lastestUpdate = $localstorage.get('lastestUpdate','');
@@ -89,8 +64,7 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     		if(typeof list[counter] == 'object') {
     			var name = AppService.getFilename(list[counter].filename);
     			
-    			var targetPath = 'cdvfile://localhost/persistent/eduappdata/';
-    			AppService.download(list, counter, list[counter].filename, targetPath, function(entry){
+    			AppService.download(list, counter, list[counter].filename, CONFIG.DOWNLOAD_PATH, function(entry){
 //    				if(name.indexOf('.mp3') == -1) {
 //    					angular.element(document.getElementsByClassName('contents')).append('<img src="'+targetPath + name+'" width="auto" height="50"/>');	
 //    				} else {
@@ -142,12 +116,12 @@ eduApp.controller('AnimalController', function($scope, $window, $state, $cordova
 //		}
 //	}
 	
-	$scope.contents = contents;
-	$scope.defaultItem = AppService.getRandomContentInList(contents);
+	$scope.contents = AppService.correctImagePath(contents);
+	$scope.defaultItem = AppService.getRandomContentInList($scope.contents);
 
 	// Play sound when user click from home page
 	if(!soundOff) {
-		AppService.play($scope.path + $scope.defaultItem.sound, function(audio){});
+		AppService.play($scope.defaultItem.sound, function(audio){});
 	}
 	
 	if(!soundOff) {
@@ -269,50 +243,5 @@ eduApp.directive('scaleAnimation', function($window, CONFIG, $timeout){
             });
         }
     };
-});
-eduApp.controller('DownloadController', function($scope, $state, $location, $stateParams, AppService, $localstorage, $window, $ionicPlatform, $cordovaMedia, $ionicModal, CONFIG, $timeout) {
-	$scope.path = CONFIG.PATH;
-	var lastUpdated = $localstorage.get('lastupdated','');
-//	$http.get("http://demo.ekc.ch/logger.json")
-//	.success(function(response) {
-//		if(lastUpdated != response.date) {
-//			AppService.checkRequestDownload(response,function(){
-//				angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
-//			});	
-//		}
-//	});
-	$ionicPlatform.ready(function() {
-		
-		var list = ['http://www.ekc.ch/logos-4live-app/bench.jpg',
-		            'http://www.ekc.ch/logos-4live-app/beldona.jpg',
-		            'http://www.ekc.ch/logos-4live-app/blackout_2.jpg',
-		            'http://www.ekc.ch/logos-4live-app/aaamigros.png',
-		            'http://www.ekc.ch/logos-4live-app/exlibris.jpg',
-		            'http://www.ekc.ch/fileadmin/Going-Out.mp3'];
-		var counter = 0;
-		
-		if(typeof list[counter] == 'string') {
-			var uri = list[counter];
-			var name = AppService.getFilename(uri);
-			
-			var targetPath = 'cdvfile://localhost/persistent/eduappdata/';
-			AppService.download(list, counter, uri, targetPath, $state, function(entry){
-				if(name.indexOf('.mp3') == -1) {
-					angular.element(document.getElementsByClassName('main-container')).append('<img src="'+targetPath + name+'" width="auto" height="50"/>');	
-				} else {
-					//var sound = new Media(targetPath + name, function(){
-		        		 //TODO
-		        	//});
-					//sound.play();
-				}
-			});
-			//counter++;
-		}
-		
-	});
-	//var o = angular.element(document.getElementsByClassName('chekcing-page'));
-	//o.append('Hello chicky!');
-	
-	//o[0].style.lineHeight = $window.innerHeight + 'px';
 });
 

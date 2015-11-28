@@ -80,15 +80,31 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
     	return minus;
     };
     
-    factory.reloadImages = function($list){
-    	var downloadPath = 'cdvfile://localhost/persistent/eduappdata/';
+    factory.correctImagePath = function($list){
+    	var $me = this;
     	angular.forEach($list, function(item) {
-    		var img = new Image();
-    		img.src = downloadPath + item.image_name;
-    		img.onload = function(){
-    			item.image_name = downloadPath + item.image_name;
-    		};
-    		img.onerror = function(){};
+    		if(item.image_name_updated) {
+    			//item.image_name = CONFIG.DOWNLOAD_PATH + item.image_name_updated;
+    			var img = new Image();
+        		img.src = CONFIG.DOWNLOAD_PATH + item.image_name_updated;
+        		img.onload = function(){
+        			item.image_name = CONFIG.DOWNLOAD_PATH + item.image_name_updated;
+        		};
+        		img.onerror = function(){
+        			item.image_name = CONFIG.PATH + item.image_name_updated;
+        		};
+    		} else {
+    			item.image_name = CONFIG.PATH + item.image_name;
+    		}
+    		
+    		// check sound
+    		if(typeof item.sound != 'undefined') {
+    			if(item.sound_updated) {
+        			item.sound = CONFIG.DOWNLOAD_PATH + item.sound_updated;
+        		} else {
+        			item.sound = CONFIG.PATH + item.sound;
+        		}   			
+    		}
 	    });
     	return $list;
     };
