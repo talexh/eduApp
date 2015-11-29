@@ -109,19 +109,20 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
     	return $list;
     };
     
-    factory.download = function(list, index, sourceUrl, targetPath, callback){
+    factory.download = function(list, $index, callback){
     	//if(typeof FileTransfer != 'undefined') {
-    		var fileTransfer = new FileTransfer();
-    		var $me = this;
-    		var filename = $me.getFilename(sourceUrl);
-			var dest = targetPath + filename;
+    		var fileTransfer = new FileTransfer(),
+    			$me = this,
+    			sourceUrl = list[$index].filename,
+    			filename = $me.getFilename(sourceUrl),
+    			dest = CONFIG.DOWNLOAD_PATH + filename;
 			
             fileTransfer.download(
         		sourceUrl,
         		dest,
                 function(entry) {
-        			index += 1;
-        			var percent = Math.round((index/list.length) * 100);
+        			$index += 1;
+        			var percent = Math.round(($index/list.length) * 100);
 					//angular.element(document.getElementsByClassName('percent')).html( ((percent > 100) ? 100 : percent)+'%' );
         			angular.element(document.getElementsByClassName('percent-bg')).css({'width':((percent > 100) ? 100 : percent)+'%'});
 					if(percent >= 100) {
@@ -134,19 +135,12 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
 					    	}
 						}, 800);
 					}
-					if(typeof list[index] == 'object') {
-						var source = list[index].filename,
-							filename = $me.getFilename(source),
-							dest = targetPath + filename;
-                    	$me.download(list, index, source, targetPath, function(obj){
-//                    		if(obj.toURL().indexOf('.mp3') == -1) {
-//            					angular.element(document.getElementsByClassName('contents')).append('<img src="'+dest+'" width="auto" height="50"/>');	
-//            				} else {
-//            					var sound = new Media(dest, function(){
-            						// TODO
-//            		        	 });
-//            					sound.play();
-//            				}
+					if(typeof list[$index] == 'object') {
+						var sourceUrl = list[$index].filename,
+							filename = $me.getFilename(sourceUrl),
+							dest = CONFIG.DOWNLOAD_PATH + filename;
+                    	$me.download(list, $index, function(obj){
+                    		
                     	});
                     	
                     	callback ? callback(entry) : null;

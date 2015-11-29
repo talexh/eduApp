@@ -23,14 +23,27 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     
     $ionicPlatform.ready(function() {
     	var lastestUpdate = $localstorage.get('lastestUpdate','');
-//    	$http.get("http://demo.ekc.ch/logger.json")
-//    	.success(function(response) {
-//    		if(lastUpdated != response.date) {
-//    			AppService.checkRequestDownload(response,function(){
-//    				angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
-//    			});	
-//    		}
-//    	});
+
+    	// Enable this when has real server
+    	/*$http.get(CONFIG.SERVER_URL + "logging/app_"+APP_ID+"_logger4all.json")
+    	.success(function(response) {
+    		if(lastestUpdate != response.date) {
+        		$localstorage.set('lastestUpdate',response.date);
+        		var list = response.log4Data;
+        		
+        		if(typeof list[0] == 'object') {
+        			var name = AppService.getFilename(list[0].filename);
+        			
+        			AppService.download(list, 0, function(entry){});
+        		}
+        	} else {
+        		angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
+        		if(mediaObj != null) {
+    	    		mediaObj.play();
+    	    	}
+        	}
+    	});*/
+    	
     	var response = {};
     	response.log4Data = [{"filename":'http://www.ekc.ch/logos-4live-app/bench.jpg'},
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/beldona.jpg'},
@@ -54,28 +67,13 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'},
     	                     {"filename":'http://www.ekc.ch/fileadmin/Going-Out.mp3'}];
     	response.date = "2015-29-11";
+    	console.log('starting...')
     	if(lastestUpdate != response.date) {
     		$localstorage.set('lastestUpdate',response.date);
-        	response.total = 21;
-    		var counter = 0,
-    			list = response.log4Data;
+    		var list = response.log4Data;
     		
-    		
-    		if(typeof list[counter] == 'object') {
-    			var name = AppService.getFilename(list[counter].filename);
-    			
-    			AppService.download(list, counter, list[counter].filename, CONFIG.DOWNLOAD_PATH, function(entry){
-//    				if(name.indexOf('.mp3') == -1) {
-//    					angular.element(document.getElementsByClassName('contents')).append('<img src="'+targetPath + name+'" width="auto" height="50"/>');	
-//    				} else {
-    					//var sound = new Media(targetPath + name, function(){
-    		        		 //TODO
-    		        	//});
-    					//sound.play();
-//    				}
-    			});
-    			
-    			//counter++;
+    		if(typeof list[0] == 'object') {
+    			AppService.download(list, 0, function(entry){});
     		}
     	} else {
     		angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
@@ -83,7 +81,7 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
 	    		mediaObj.play();
 	    	}
     	}
-		
+    	
 		if(mediaObj != null) {
 //    		mediaObj.play();
     		$scope.stopMedia = function(){

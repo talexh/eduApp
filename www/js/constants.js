@@ -1,6 +1,7 @@
 /**
  * 
  */
+var isAppForeground = true;
 
 var mediaObj = null,soundOff = false,filename = '';
 angular.module('eduApp.utils', [])
@@ -26,7 +27,7 @@ eduApp.constant('CONFIG', {
     APP_NAME: 'edu App',
     APP_VERSION: '1.0',
     PATH : 'AnimalsData/',
-    SERVER_URL: 'http://',
+    SERVER_URL: 'http://apps.zkids.com/',
     SYSTEM_LANGUAGE: 'vi',
     iPhone4: '320x480',
     iPhone5: '320x568',

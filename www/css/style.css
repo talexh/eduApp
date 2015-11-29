@@ -384,7 +384,7 @@
 	-moz-border-radius: 10px;
 	-mz-border-radius: 10px;
 	-o-border-radius: 10px;
-	border: 1px solid #fff;
+	border: 1px solid #008000;
 	margin: 10px auto;
 }
 .percent-bg {
@@ -395,7 +395,8 @@
 	-moz-border-radius: 10px;
 	-mz-border-radius: 10px;
 	-o-border-radius: 10px;
-	background: GREEN;
+	background: #008000;
+	margin-top: -1px;
 	-webkit-transition: all 0.8s ease-in;
 	-moz-transition: all 0.8s ease-in;
 	-o-transition: all 0.8s ease-in;
