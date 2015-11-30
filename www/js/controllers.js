@@ -1,13 +1,5 @@
 eduApp.controller('AppController', function($scope, $state, $stateParams, AppService, $window, $ionicPlatform, $localstorage, $cordovaMedia, $ionicModal, CONFIG, $timeout) {
 
-    // With the new view caching in Ionic, Controllers are only called
-    // when they are recreated or on app start, instead of every page change.
-    // To listen for when this page is active (for example, to refresh data),
-    // listen for the $ionicView.enter event:
-//    $scope.$on('$ionicView.enter', function(e) {
-//    	console.log('view enter');
-//    });
-
 	if(typeof Media != 'undefined') {
         mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
     } else {
@@ -19,8 +11,6 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     $scope.categories = AppService.correctImagePath($categories);
     $scope.path = CONFIG.PATH;
 
-    //$scope.contents = jsonData.news;
-    
     $ionicPlatform.ready(function() {
     	var lastestUpdate = $localstorage.get('lastestUpdate','');
 
