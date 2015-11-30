@@ -65,7 +65,9 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/blackout_2.jpg'},
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/aaamigros.png'},
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'}];
-    	response.date = "2015-30-11";
+    	
+    	response.date = "2015-01-12";
+    	
     	if(lastestUpdate != response.date) {
     		AppService.download(response, 0, function(entry){});
     	} else {
