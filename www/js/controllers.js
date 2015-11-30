@@ -64,17 +64,10 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/beldona.jpg'},
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/blackout_2.jpg'},
     	                     {"filename":'http://www.ekc.ch/logos-4live-app/aaamigros.png'},
-    	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'},
-    	                     {"filename":'http://www.ekc.ch/fileadmin/Going-Out.mp3'}];
-    	response.date = "2015-29-11";
-    	console.log('starting...')
+    	                     {"filename":'http://www.ekc.ch/logos-4live-app/exlibris.jpg'}];
+    	response.date = "2015-30-11";
     	if(lastestUpdate != response.date) {
-    		$localstorage.set('lastestUpdate',response.date);
-    		var list = response.log4Data;
-    		
-    		if(typeof list[0] == 'object') {
-    			AppService.download(list, 0, function(entry){});
-    		}
+    		AppService.download(response, 0, function(entry){});
     	} else {
     		angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
     		if(mediaObj != null) {

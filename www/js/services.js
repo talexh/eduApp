@@ -109,10 +109,11 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
     	return $list;
     };
     
-    factory.download = function(list, $index, callback){
-    	//if(typeof FileTransfer != 'undefined') {
+    factory.download = function(response, $index, callback){
+    	if(FileTransfer) {
     		var fileTransfer = new FileTransfer(),
     			$me = this,
+    			list = response.log4Data,
     			sourceUrl = list[$index].filename,
     			filename = $me.getFilename(sourceUrl),
     			dest = CONFIG.DOWNLOAD_PATH + filename;
@@ -123,30 +124,29 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
                 function(entry) {
         			$index += 1;
         			var percent = Math.round(($index/list.length) * 100);
-					//angular.element(document.getElementsByClassName('percent')).html( ((percent > 100) ? 100 : percent)+'%' );
         			angular.element(document.getElementsByClassName('percent-bg')).css({'width':((percent > 100) ? 100 : percent)+'%'});
 					if(percent >= 100) {
 						$timeout(function(){
 							angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
 							angular.element(document.getElementsByClassName('contents')).html('');
 							angular.element(document.getElementsByClassName('percent')).html('');
+							$localstorage.set('lastestUpdate',response.date);
 							if(mediaObj != null) {
 					    		mediaObj.play();
 					    	}
 						}, 800);
 					}
 					if(typeof list[$index] == 'object') {
+						
 						var sourceUrl = list[$index].filename,
 							filename = $me.getFilename(sourceUrl),
 							dest = CONFIG.DOWNLOAD_PATH + filename;
-                    	$me.download(list, $index, function(obj){
+                    	$me.download(response, $index, function(obj){
                     		
                     	});
                     	
                     	callback ? callback(entry) : null;
                     }
-					
-                    //angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
                 },
                 function(error) {
                 	console.log("download error source " + error.source);
@@ -161,7 +161,7 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
                     }
                 }
             );
-    	//}
+    	}
     };
     
     factory.getFilename = function(filename){
