@@ -86,23 +86,23 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
     		if(item.image_name_updated) {
     			//item.image_name = CONFIG.DOWNLOAD_PATH + item.image_name_updated;
     			var img = new Image();
-        		img.src = CONFIG.DOWNLOAD_PATH + item.image_name_updated;
+        		img.src = (item.image_name_updated.indexOf(CONFIG.DOWNLOAD_PATH) == -1) ? (CONFIG.DOWNLOAD_PATH + item.image_name_updated) : item.image_name_updated;
         		img.onload = function(){
-        			item.image_name = CONFIG.DOWNLOAD_PATH + item.image_name_updated;
+        			item.image_name = (item.image_name_updated.indexOf(CONFIG.DOWNLOAD_PATH) == -1) ? (CONFIG.DOWNLOAD_PATH + item.image_name_updated) : item.image_name_updated;
         		};
         		img.onerror = function(){
-        			item.image_name = CONFIG.PATH + item.image_name_updated;
+        			item.image_name = (item.image_name_updated.indexOf(CONFIG.PATH) == -1) ? (CONFIG.PATH + item.image_name_updated) : item.image_name_updated;
         		};
     		} else {
-    			item.image_name = CONFIG.PATH + item.image_name;
+    			item.image_name = (item.image_name.indexOf(CONFIG.PATH) == -1) ? (CONFIG.PATH + item.image_name) : item.image_name;
     		}
     		
     		// check sound
     		if(typeof item.sound != 'undefined') {
     			if(item.sound_updated) {
-        			item.sound = CONFIG.DOWNLOAD_PATH + item.sound_updated;
+        			item.sound = (item.sound_updated.indexOf(CONFIG.DOWNLOAD_PATH) == -1) ? (CONFIG.DOWNLOAD_PATH + item.sound_updated) : item.sound_updated;
         		} else {
-        			item.sound = CONFIG.PATH + item.sound;
+        			item.sound = (item.sound.indexOf(CONFIG.PATH) == -1) ? (CONFIG.PATH + item.sound) : item.sound;
         		}   			
     		}
 	    });
@@ -110,7 +110,7 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
     };
     
     factory.download = function(response, $index, callback){
-    	if(FileTransfer) {
+    	if(typeof FileTransfer != 'undefined') {
     		var fileTransfer = new FileTransfer(),
     			$me = this,
     			list = response.log4Data,
@@ -161,6 +161,13 @@ eduApp.factory('AppService', function(CONFIG, $localstorage, $timeout) {
                     }
                 }
             );
+    	} else {
+    		angular.element(document.getElementsByClassName('main-container')).addClass('hidden');
+			angular.element(document.getElementsByClassName('contents')).html('');
+			angular.element(document.getElementsByClassName('percent')).html('');
+			if(mediaObj != null) {
+	    		mediaObj.play();
+	    	}
     	}
     };
     

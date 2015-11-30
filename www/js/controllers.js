@@ -97,17 +97,6 @@ eduApp.controller('AnimalController', function($scope, $window, $state, $cordova
 	$scope.lineHeight = $window.innerHeight +'px';
 	
 	var contents = AppService.getContentByCategory($scope.categoryId);
-//	for(var k in contents) {
-//		if(typeof contents[k] == 'object') {
-//			if(contents[k].image_name == 'conhuoucaoco.jpg' && filename != ''){
-//				contents[k].image_name = filename;
-//			} else {
-//				if(contents[k].image_name.indexOf(CONFIG.PATH) == -1) {
-//					contents[k].image_name = CONFIG.PATH + contents[k].image_name;					
-//				}
-//			}
-//		}
-//	}
 	
 	$scope.contents = AppService.correctImagePath(contents);
 	$scope.defaultItem = AppService.getRandomContentInList($scope.contents);

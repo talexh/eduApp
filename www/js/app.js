@@ -20,49 +20,35 @@ eduApp.run(function($ionicPlatform, $http, AppService, CONFIG, $localstorage, $c
         } else {
         	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
         }
-        
-//        var lastUpdated = $localstorage.get('lastupdated','');
-//        $http.get("http://demo.ekc.ch/logger.json")
-//        .success(function(response) {
-//        	if(lastUpdated != response.date) {
-//        		AppService.checkRequestDownload(response,function(){});	
-//        	}
-//        });
-//        var uri = "http://www.ekc.ch/ekcmobileweb/images/logo/2_shoppitivoli_logo_shopping_mall.png";
-//        var targetPath = 'cdvfile://localhost/persistent/eduappdata/shoppyland.png';
-//        AppService.download(uri, targetPath, function(entry){
-//        	angular.element(document.getElementsByClassName('append-container')).append('<img src="'+entry.toURL()+'" width="150" height="auto"/>');
-//        });
-        
     });
 });
 eduApp.config(function($stateProvider, $urlRouterProvider) {
 
-  $stateProvider
+	$stateProvider
     .state('tabs', {
-      url: "/tab",
-      abstract: true,
-      templateUrl: "templates/tabs.html"
+    	url: "/tab",
+    	abstract: true,
+    	templateUrl: "templates/tabs.html"
     })
     .state('tabs.home', {
-      url: "/home",
-      views: {
-        'home-tab': {
-          templateUrl: "templates/home.html",
-          controller: 'AppController'
-        }
-      }
+    	url: "/home",
+    	views: {
+    		'home-tab': {
+    			templateUrl: "templates/home.html",
+    			controller: 'AppController'
+    		}
+    	}
     })
     .state('tabs.liveshow', {
-      url: "/liveshow/:categoryId",
-      views: {
-        'home-tab': {
-          templateUrl: "templates/liveshow.html",
-          controller: 'AnimalController'
-        }
-      }
+    	url: "/liveshow/:categoryId",
+    	views: {
+    		'home-tab': {
+    			templateUrl: "templates/liveshow.html",
+    			controller: 'AnimalController'
+    		}
+    	}
     });
     
-  $urlRouterProvider.otherwise("/tab/home");
+	$urlRouterProvider.otherwise("/tab/home");
 
 });
