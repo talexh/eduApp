@@ -19,4 +19,20 @@ angular.module('eduApp.utils', [])
 	      return JSON.parse($window.localStorage[key] || '{}');
 	    }
 	 }
+}])
+.factory('Utility',['$window','CONFIG','$timeout', function($window, CONFIG, $timeout){
+	return {
+		appendFile : function($filename, callback){
+			if($filename.indexOf('.js') != -1) {
+				var scriptObject = document.createElement('script');
+				scriptObject.src = CONFIG.DOWNLOAD_PATH + $filename;
+				
+				angular.element(document.querySelector('head')).append(scriptObject);
+				
+				$timeout(function(){
+					callback ? callback(): null;
+				}, 500));
+			}
+		},
+	};
 }]);
