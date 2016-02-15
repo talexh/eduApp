@@ -26,7 +26,10 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
         } else {
         	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
         }
-        downloadPath = cordova.file.documentsDirectory + 'ZkidsAppData/';
+		if(typeof cordova != 'undefined') {
+			downloadPath = cordova.file.documentsDirectory + 'ZkidsAppData/';
+		}
+        
         
     	var lastestUpdate = $Utility.get('lastestUpdate');
     	
@@ -41,28 +44,31 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
     	
     	// Enable this when has real server
     	// Check if has internet then request on server to check any new updated the data
-      	$http.get(CONFIG.SERVER_URL + "app_"+APP_ID+"_logger4all")
-      	.success(function(response) {
-      		
-      		if(lastestUpdate != response.date) {
-      			angular.element(document.querySelector('.checking')).addClass('hidden').removeClass('show');
-          		angular.element(document.querySelector('.downloading')).removeClass('hidden').addClass('show');
-          		AppService.download(response, 0, function(entry){
-          		});
-          	} else {
-          		AppService.appendDownloadData(function(){
-          			$categories = AppService.getCategories();
-          			$state.go("tabs.home", {}, {reload: false});
-          		});
-          	}
-      		$timeout.cancel(promise);
-      	}, function(err) {
-      		AppService.appendDownloadData(function(){
-      			$categories = AppService.getCategories();
-      			$state.go("tabs.home", {}, {reload: false});
-      		});
-      		$timeout.cancel(promise);
-  	    });
+		if(window.location.href.indexOf('http://localhost') == -1) {
+			$http.get(CONFIG.SERVER_URL + "app_"+APP_ID+"_logger4all")
+			.success(function(response) {
+				
+				if(lastestUpdate != response.date) {
+					angular.element(document.querySelector('.checking')).addClass('hidden').removeClass('show');
+					angular.element(document.querySelector('.downloading')).removeClass('hidden').addClass('show');
+					AppService.download(response, 0, function(entry){
+					});
+				} else {
+					AppService.appendDownloadData(function(){
+						$categories = AppService.getCategories();
+						$state.go("tabs.home", {}, {reload: false});
+					});
+				}
+				$timeout.cancel(promise);
+			}, function(err) {
+				AppService.appendDownloadData(function(){
+					$categories = AppService.getCategories();
+					$state.go("tabs.home", {}, {reload: false});
+				});
+				$timeout.cancel(promise);
+			});
+		}
+      	
       	
       	// Show ad banner
       	//onDeviceReady();
