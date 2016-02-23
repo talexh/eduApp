@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.zkidsapp.zkidsstepone" version="0.1.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Zkids</name>
+<widget id="com.zkidsapp.zkidsstepone" version="0.1.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>ZkidsStep1</name>
   <description>
         Đây là ứng dụng giúp cho trẻ em học và hiểu biết được mọi thứ quanh ta 
     </description>
   <author email="info@zkidsapp.com" href="http://http://zkidsapp.com">
-      Thuy Tran
+      Zkids
     </author>
   <content src="index.html"/>
   <access origin="*"/>

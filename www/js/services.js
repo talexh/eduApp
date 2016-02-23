@@ -85,7 +85,7 @@ function onDeviceReady() {
 	//admob.requestInterstitialAd();
 }
 */
-eduApp.factory('AppService', function(CONFIG, $Utility, $timeout, $cordovaMedia, $state) {
+eduApp.factory('AppService', function(CONFIG,$window, $http, $Utility, $timeout, $cordovaMedia, $state) {
      
     var factory = {};
     
@@ -109,10 +109,30 @@ eduApp.factory('AppService', function(CONFIG, $Utility, $timeout, $cordovaMedia,
     		audioObj = null;
     	}
     	if(typeof Media != 'undefined') {
-    		 audioObj = new Media(src, function(){
-        		 callback ? callback(audioObj) : null;
-        	 });
-    		 audioObj.play();
+    		if(src.indexOf('/Documents/') != -1) {
+    			$window.resolveLocalFileSystemURL(src, function(dir){
+
+        	        var basePath = dir.toInternalURL();
+
+        	        audioObj = new Media(basePath, function(){
+    	           		 callback ? callback(audioObj) : null;
+    	           	 }, function(error){
+    	           		 console.log('error code: '+error.code);
+    	           		 console.log('error msg: '+error.message);
+    	           	 });
+    	       		 audioObj.play();
+        	      });
+    		} else {
+    			audioObj = new Media(src, function(){
+	           		 callback ? callback(audioObj) : null;
+	           	 }, function(error){
+	           		 console.log('error code: '+error.code);
+	           		 console.log('error msg: '+error.message);
+	           	 });
+	       		 audioObj.play();
+    		}
+    		 
+    		 
             // audio.setVolume(10);
     	 } else {
     		 audioObj = new Audio(src);
@@ -131,18 +151,23 @@ eduApp.factory('AppService', function(CONFIG, $Utility, $timeout, $cordovaMedia,
     // Get data services
     factory.getContentByCategory = function($categoryId) {
     	var list = [];
-    	if(typeof jsonData != 'undefined') {
+    	/*if(typeof jsonData != 'undefined') {
     		if(typeof jsonData.news != 'undefined') {
 				if(typeof jsonData.news[$categoryId] != 'undefined') {
 					return jsonData.news[$categoryId];
 				}
     		}
-    	}
+    	}*/
+		if(typeof json_data.news != 'undefined') {
+			if(typeof json_data.news[$categoryId] != 'undefined') {
+				return json_data.news[$categoryId];
+			}
+		}
     	return list;
     };
     
     factory.getCategories = function(){
-    	return (typeof jsonData != 'undefined') ? jsonData.categories : [];
+    	return (json_data) ? json_data.categories : [];
     };
     
     factory.getRandomContentInList = function(list) {
@@ -216,15 +241,28 @@ eduApp.factory('AppService', function(CONFIG, $Utility, $timeout, $cordovaMedia,
     		}
     		
     		// check sound
-    		if(typeof item.sound != 'undefined') {
-    			if(item.sound_updated != '') {
-        			item.sound = CONFIG.DOWNLOAD_PATH + item.sound_updated;
+    		//if( item.sound ) {
+    			if( item.sound_updated ) {
+        			item.sound = downloadPath + item.sound_updated;
         		} else {
         			item.sound = CONFIG.PATH + item.sound;
         		}   			
-    		}
+    		//}
 	    });
     	return $list;
+    };
+    factory.loadData = function(callback) {
+    	var $me = this;
+    	$http.get(CONFIG.SERVER_URL + "app_"+APP_ID+"_data")
+      	.success(function(response) {
+      		$Utility.set('json_data',JSON.stringify(response));
+      		json_data = response;
+      		$categories = $me.getCategories();
+      		
+      		callback ? callback() : null;
+      	}, function(err) {
+      		alert('error loading data!');
+  	    });
     };
     factory.download = function(response, $index, callback){
     	if(typeof FileTransfer != 'undefined') {
@@ -235,72 +273,89 @@ eduApp.factory('AppService', function(CONFIG, $Utility, $timeout, $cordovaMedia,
     		
     		var	filename = $me.getFilename(sourceUrl),
     			dest = CONFIG.DOWNLOAD_PATH + filename;
-            fileTransfer.download(
-        		sourceUrl,
-        		dest,
-                function(entry) {
-        			var name = $me.getFilename(entry.toURL()),
-        				dataEntry = null;
-        			if(name.indexOf('.js') != -1) {
-        				appUpdateData = name;
-        				$Utility.set('filenamedata',appUpdateData);
-        				
-        				dataEntry = entry;
-        				// Included file data
-        				require(entry.toURL(), function(){
-        					$categories = $me.getCategories();
-        				});
-        				
-        			} else if(name.indexOf('.mp3') == -1) {
-        				// angular.element(document.getElementsByClassName('main-container')).append('<img
-						// src="'+downloadPath + name+'" width="50"
-						// height="50"/>');
-        			}
-        			$index += 1;
-        			var percent = Math.round(($index/list.length) * 100);
-        			angular.element(document.querySelector('.percent-bg')).css({'width':((percent > 100) ? 100 : percent)+'%'});
-        			
-					if(percent >= 100) {
-	        			$timeout(function(){
-							angular.element(document.querySelector('.main-container')).addClass('hidden');
-							angular.element(document.querySelector('.contents')).html('');
-							angular.element(document.querySelector('.percent')).html('');
-							$Utility.set('lastestUpdate',response.date);
-							$state.go("tabs.home", {}, {reload: false});							
-						}, 800);
-						//callback ? callback(dataEntry) : null;
-					}
-					if(typeof list[$index] == 'object') {
-						
-						var sourceUrl = list[$index].filename,
-							filename = $me.getFilename(sourceUrl),
-							dest = CONFIG.DOWNLOAD_PATH + filename;
-                    	// Continue download
-						
-						var times = 0;
-						if(name.indexOf('.js') != -1) {
-							times = 1000;
-						} else {
-							times = 0;	
+
+    		if(filename.indexOf('_data.js') != -1) {
+				$me.loadData(function(){
+					console.log(json_data.categories);
+					$index += 1;
+					var percent = Math.round(($index/list.length) * 100);
+	    			angular.element(document.querySelector('.percent-bg')).css({'width':((percent > 100) ? 100 : percent)+'%'});
+	    			
+					$me.download(response, $index);
+				});
+			} else {
+				
+    			fileTransfer.download(
+	        		sourceUrl,
+	        		dest,
+	                function(entry) {
+	        			var name = $me.getFilename(entry.toURL()),
+	        				dataEntry = null;
+	        			/*if(name.indexOf('.js') != -1) {
+	        				appUpdateData = name;
+	        				$Utility.set('filenamedata',appUpdateData);
+	        				
+	        				$me.loadData();
+	        				
+	        				dataEntry = entry;
+	        				// Included file data
+	        				require(entry.toURL(), function(){
+	        					$categories = $me.getCategories();
+	        				});
+	        				
+	        			} else if(name.indexOf('.mp3') == -1) {
+	        				// angular.element(document.getElementsByClassName('main-container')).append('<img
+							// src="'+downloadPath + name+'" width="50"
+							// height="50"/>');
+	        			}*/
+	        			$index += 1;
+	        			var percent = Math.round(($index/list.length) * 100);
+	        			angular.element(document.querySelector('.percent-bg')).css({'width':((percent > 100) ? 100 : percent)+'%'});
+	        			
+						if(percent >= 100) {
+		        			$timeout(function(){
+								angular.element(document.querySelector('.main-container')).addClass('hidden');
+								angular.element(document.querySelector('.contents')).html('');
+								angular.element(document.querySelector('.percent')).html('');
+								$Utility.set('lastestUpdate',response.date);
+								$state.go("tabs.home", {}, {reload: false});							
+							}, 800);
+							//callback ? callback(dataEntry) : null;
 						}
-						$timeout(function(){
-							$me.download(response, $index);
-						}, times);
-                    }
-                },
-                function(error) {
-                	console.log("download error source " + error.source);
-                	console.log("download error target " + error.target);
-                	console.log("upload error code" + error.code);
-                    
-                },
-                false,
-                {
-                    headers: {
-                        "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
-                    }
-                }
-            );
+						if(typeof list[$index] == 'object') {
+							
+							var sourceUrl = list[$index].filename,
+								filename = $me.getFilename(sourceUrl),
+								dest = CONFIG.DOWNLOAD_PATH + filename;
+	                    	// Continue download
+							
+							var times = 0;
+							if(name.indexOf('.js') != -1) {
+								times = 1000;
+							} else {
+								times = 0;	
+							}
+							$timeout(function(){
+								$me.download(response, $index);
+							}, times);
+	                    }
+	                },
+	                function(error) {
+	                	console.log("download error source " + error.source);
+	                	console.log("download error target " + error.target);
+	                	console.log("upload error code" + error.code);
+	                    
+	                },
+	                false,
+	                {
+	                    headers: {
+	                        "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
+	                    }
+	                }
+	            );
+			}
+    		
+            
     	} else {
     		angular.element(document.querySelector('.main-container')).addClass('hidden');
 			angular.element(document.querySelector('.contents')).html('');

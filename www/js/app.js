@@ -21,21 +21,29 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
         	window.screen.lockOrientation('portrait');	
         }
         
-        if(typeof Media != 'undefined') {
-            mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
+        if(typeof cordova != 'undefined') {
+        	downloadPath = cordova.file.documentsDirectory + 'ZkidsAppData/';        	
         } else {
-        	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
+        	downloadPath = CONFIG.DOWNLOAD_PATH;
         }
-        downloadPath = cordova.file.documentsDirectory + 'ZkidsAppData/';
+        
+        // play background music
+        if(typeof Media != 'undefined') {
+            mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "nhacnen.mp3");
+        } else {
+        	mediaObj = new Audio(CONFIG.PATH + "nhacnen.mp3");
+        }
         
     	var lastestUpdate = $Utility.get('lastestUpdate');
+    	json_data = $Utility.getObject('json_data');
     	
     	// If 15 seconds the app still not connected to internet then redirect to home page
     	var promise = $timeout(function(){
-    		AppService.appendDownloadData(function(){
+    		//AppService.appendDownloadData(function(){
+    			
     			$categories = AppService.getCategories();
       			$state.go("tabs.home", {}, {reload: false});
-      		});
+      		//});
     		$timeout.cancel(promise);
     	}, 15000);
     	
@@ -50,17 +58,24 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
           		AppService.download(response, 0, function(entry){
           		});
           	} else {
-          		AppService.appendDownloadData(function(){
+          		if(typeof json_data.news == 'undefined') {
+            		json_data = jsonData;
+            		
+            		$Utility.set('json_data',JSON.stringify(jsonData));
+            	}
+          		$categories = json_data.categories;
+          		$state.go("tabs.home", {}, {reload: false});
+          		/*AppService.appendDownloadData(function(){
           			$categories = AppService.getCategories();
           			$state.go("tabs.home", {}, {reload: false});
-          		});
+          		});*/
           	}
       		$timeout.cancel(promise);
       	}, function(err) {
-      		AppService.appendDownloadData(function(){
+      		/*AppService.appendDownloadData(function(){
       			$categories = AppService.getCategories();
       			$state.go("tabs.home", {}, {reload: false});
-      		});
+      		});*/
       		$timeout.cancel(promise);
   	    });
       	
@@ -88,21 +103,14 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
               };
           }
    
-    if(window.AdMob) {
-    	AdMob.createBanner( {
-        adId:admobid.banner, 
-        position:AdMob.AD_POSITION.BOTTOM_CENTER, 
-        autoShow:true} );
-    }
+	    if(window.AdMob) {
+	    	AdMob.createBanner( {
+	        adId:admobid.banner, 
+	        position:AdMob.AD_POSITION.BOTTOM_CENTER, 
+	        autoShow:true} );
+	    }
    
-  //=======AdMob Code End=======
-      	
-        // play background music
-        if(typeof Media != 'undefined') {
-            mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
-        } else {
-        	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
-        }
+	    //=======AdMob Code End=======
     });
 });
 eduApp.config(function($stateProvider, $urlRouterProvider) {
