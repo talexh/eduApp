@@ -21,54 +21,69 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
         	window.screen.lockOrientation('portrait');	
         }
         
-        if(typeof Media != 'undefined') {
-            mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
+        if(typeof cordova != 'undefined') {
+        	downloadPath = cordova.file.documentsDirectory + 'ZkidsAppData/';        	
         } else {
-        	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
+        	downloadPath = CONFIG.DOWNLOAD_PATH;
         }
+        
+        // play background music
+        if(typeof Media != 'undefined') {
+            mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "nhacnen.mp3");
+        } else {
+        	mediaObj = new Audio(CONFIG.PATH + "nhacnen.mp3");
+        }
+
 		if(typeof cordova != 'undefined') {
 			downloadPath = cordova.file.documentsDirectory + 'ZkidsAppData/';
 		}
-        
-        
+               
     	var lastestUpdate = $Utility.get('lastestUpdate');
+    	json_data = $Utility.getObject('json_data');
     	
     	// If 15 seconds the app still not connected to internet then redirect to home page
     	var promise = $timeout(function(){
-    		AppService.appendDownloadData(function(){
+    		//AppService.appendDownloadData(function(){
+    			
     			$categories = AppService.getCategories();
       			$state.go("tabs.home", {}, {reload: false});
-      		});
+      		//});
     		$timeout.cancel(promise);
     	}, 15000);
     	
     	// Enable this when has real server
     	// Check if has internet then request on server to check any new updated the data
-		if(window.location.href.indexOf('http://localhost') == -1) {
-			$http.get(CONFIG.SERVER_URL + "app_"+APP_ID+"_logger4all")
-			.success(function(response) {
-				
-				if(lastestUpdate != response.date) {
-					angular.element(document.querySelector('.checking')).addClass('hidden').removeClass('show');
-					angular.element(document.querySelector('.downloading')).removeClass('hidden').addClass('show');
-					AppService.download(response, 0, function(entry){
-					});
-				} else {
-					AppService.appendDownloadData(function(){
-						$categories = AppService.getCategories();
-						$state.go("tabs.home", {}, {reload: false});
-					});
-				}
-				$timeout.cancel(promise);
-			}, function(err) {
-				AppService.appendDownloadData(function(){
-					$categories = AppService.getCategories();
-					$state.go("tabs.home", {}, {reload: false});
-				});
-				$timeout.cancel(promise);
-			});
-		}
-      	
+
+      	$http.get(CONFIG.SERVER_URL + "app_"+APP_ID+"_logger4all")
+      	.success(function(response) {
+      		
+      		if(lastestUpdate != response.date) {
+      			angular.element(document.querySelector('.checking')).addClass('hidden').removeClass('show');
+          		angular.element(document.querySelector('.downloading')).removeClass('hidden').addClass('show');
+          		AppService.download(response, 0, function(entry){
+          		});
+          	} else {
+          		if(typeof json_data.news == 'undefined') {
+            		json_data = jsonData;
+            		
+            		$Utility.set('json_data',JSON.stringify(jsonData));
+            	}
+          		$categories = json_data.categories;
+          		$state.go("tabs.home", {}, {reload: false});
+          		/*AppService.appendDownloadData(function(){
+          			$categories = AppService.getCategories();
+          			$state.go("tabs.home", {}, {reload: false});
+          		});*/
+          	}
+      		$timeout.cancel(promise);
+      	}, function(err) {
+      		/*AppService.appendDownloadData(function(){
+      			$categories = AppService.getCategories();
+      			$state.go("tabs.home", {}, {reload: false});
+      		});*/
+			$state.go("tabs.home", {}, {reload: false});
+      		$timeout.cancel(promise);
+  	    });
       	
       	// Show ad banner
       	//onDeviceReady();
@@ -77,38 +92,31 @@ eduApp.run(function($ionicPlatform, $state, $http, AppService, $ionicPopup, $roo
       	 
         var admobid = {};
           // select the right Ad Id according to platform
-          if( /(android)/i.test(navigator.userAgent) ) { 
-              admobid = { // for Android
-                  banner: 'ca-app-pub-3667370934581818/1249913482',
-                  interstitial: ''
-              };
-          } else if(/(ipod|iphone|ipad)/i.test(navigator.userAgent)) {
-              admobid = { // for iOS
-                  banner: 'ca-app-pub-3667370934581818/1249913482',
-                  interstitial: ''
-              };
-          } else {
-              admobid = { // for Windows Phone
-                  banner: 'ca-app-pub-6869992474017983/8878394753',
-                  interstitial: 'ca-app-pub-6869992474017983/1355127956'
-              };
-          }
-   
-    if(window.AdMob) {
-    	AdMob.createBanner( {
-        adId:admobid.banner, 
-        position:AdMob.AD_POSITION.BOTTOM_CENTER, 
-        autoShow:true} );
-    }
-   
-  //=======AdMob Code End=======
-      	
-        // play background music
-        if(typeof Media != 'undefined') {
-            mediaObj = $cordovaMedia.newMedia(CONFIG.PATH + "icanwalk.mp3");
+        if( /(android)/i.test(navigator.userAgent) ) { 
+			admobid = { // for Android
+                banner: 'ca-app-pub-3667370934581818/1249913482',
+                interstitial: ''
+            };
+        } else if(/(ipod|iphone|ipad)/i.test(navigator.userAgent)) {
+            admobid = { // for iOS
+                banner: 'ca-app-pub-3667370934581818/1249913482',
+                interstitial: ''
+            };
         } else {
-        	mediaObj = new Audio(CONFIG.PATH + "icanwalk.mp3");
+            admobid = { // for Windows Phone
+                banner: 'ca-app-pub-6869992474017983/8878394753',
+                interstitial: 'ca-app-pub-6869992474017983/1355127956'
+            };
         }
+   
+	    if(window.AdMob) {
+	    	AdMob.createBanner( {
+	        adId:admobid.banner, 
+	        position:AdMob.AD_POSITION.BOTTOM_CENTER, 
+	        autoShow:true} );
+	    }
+   
+	    //=======AdMob Code End=======
     });
 });
 eduApp.config(function($stateProvider, $urlRouterProvider) {

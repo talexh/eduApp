@@ -8,6 +8,10 @@ eduApp.controller('AppController', function($scope, $state, $stateParams, AppSer
     $scope.path = CONFIG.PATH;
     $scope.downloadPath = downloadPath;
     
+    if(typeof json_data.news != 'undefined') {
+    	jsonData = {};
+    }
+    
     //$ionicPlatform.ready(function() {
 //    	if($categories.length == 0) {
 //        	$categories = AppService.getCategories();
@@ -36,7 +40,6 @@ eduApp.controller('AnimalController', function($scope, $window, $state, $cordova
 		$contents = AppService.getContentByCategory($scope.categoryId);
 		$scope.contents = $contents;//AppService.correctImagePath($contents);
 		$scope.defaultItem = AppService.getRandomContentInList($scope.contents);
-		
 		
 		// Play sound when user click from home page
 		if(!soundOff) {

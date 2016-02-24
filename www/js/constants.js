@@ -15,7 +15,8 @@ function require(file,callback){
 	}
 	head.appendChild(script); 
 }
-var isAppForeground = true;
+var isAppForeground = true,
+	json_data = null;
 
 var mediaObj = null,audioObj = null,soundOff = false,filename = '', $categories = [], $contents = [];
 

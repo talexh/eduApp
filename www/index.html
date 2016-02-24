@@ -93,7 +93,7 @@
               <ion-item ng-repeat="item in contents" ng-click="play($event)" scale-animation
               on-swipe-left="onSwipeLeft({{$index}}, {{contents.length}})" 
               on-swipe-right="onSwipeRight({{$index}}, {{contents.length}})" 
-              data-src="{{item.sound_updated ? (downloadPath + item.sound_updated) : (path + item.sound)}}" class="item animal-item clickable {{defaultItem.id == item.id ? 'current' : ''}} slide-able" 
+              data-src="{{(item.sound_updated) ? (downloadPath + item.sound_updated) : (path + item.sound)}}" class="item animal-item clickable {{defaultItem.id == item.id ? 'current' : ''}} slide-able" 
               data-index="{{$index}}" data-total="{{contents.length}}" ng-style="{lineHeight:lineHeight}">
                 <img src="{{(item.image_name_updated) ? (downloadPath + item.image_name_updated) : (path + item.image_name) }}"/>
                 
